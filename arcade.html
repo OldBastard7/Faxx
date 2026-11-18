@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FAXX Arcade</title><link rel="stylesheet" href="style.css" />
+<style>.tiles{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.cab{background:#fff;border:2px solid #f5e2ff;border-radius:16px;padding:16px}
+.cab:hover{border-color:var(--mint)}.cab b{font-family:Bungee,sans-serif;font-size:11.5px;display:block;margin-bottom:5px}
+.cab p{font-size:10.5px;color:#8a6b9b;margin:0 0 10px}
+#dos{width:100%;height:520px;border:3px solid var(--cyan);border-radius:14px;background:#000}</style></head>
+<body>
+<div class="top"><a class="brand" href="index.html">← FAXX</a><span class="spacer"></span></div>
+<div class="wrap"><h1>Arcade</h1>
+<p class="lead">Emulation runs in the browser — nothing is hosted here, so nothing can be taken down from here.</p>
+<div class="grid tiles" style="margin-bottom:22px">
+  <a class="cab" href="https://itch.io/games/html5" target="_blank" rel="noopener"><b>HTML5 GAMES</b><p>Thousands, free, playable in tab.</p><span class="btn ghost">OPEN</span></a>
+  <a class="cab" href="https://js-dos.com/games/" target="_blank" rel="noopener"><b>DOS ARCHIVE</b><p>Classic MS-DOS titles.</p><span class="btn ghost">OPEN</span></a>
+  <a class="cab" href="https://ruffle.rs/demo/" target="_blank" rel="noopener"><b>FLASH DEMO</b><p>Ruffle plays SWF without plugins.</p><span class="btn ghost">OPEN</span></a>
+</div>
+<h2>EMBEDDED CABINET</h2>
+<iframe id="dos" src="https://js-dos.com/games/" loading="lazy" title="arcade"></iframe>
+</div></body></html>

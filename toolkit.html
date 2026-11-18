@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FAXX Toolkit</title><link rel="stylesheet" href="style.css" />
+<style>.tool{background:#fff;border:2px solid #f5e2ff;border-radius:16px;padding:14px;margin-bottom:12px}
+.tool h3{font-size:11.5px;margin:0 0 9px}.tool textarea{width:100%;min-height:70px;font-family:ui-monospace,monospace;font-size:12px}</style></head>
+<body>
+<div class="top"><a class="brand" href="index.html">← FAXX</a><span class="spacer"></span></div>
+<div class="wrap"><h1>Toolkit</h1>
+<div class="tool"><h3>BASE64</h3><textarea id="b64"></textarea>
+<div class="row" style="margin-top:8px"><button class="btn" onclick="b64.value=btoa(b64.value)">ENCODE</button>
+<button class="btn ghost" onclick="try{b64.value=atob(b64.value)}catch(e){}">DECODE</button></div></div>
+<div class="tool"><h3>SHA-256</h3><textarea id="hs"></textarea>
+<div class="row" style="margin-top:8px"><button class="btn" onclick="hashIt()">HASH</button>
+<output id="hout" style="font-size:11px;word-break:break-all;color:#8a6b9b"></output></div></div>
+<div class="tool"><h3>CASE</h3><textarea id="cs"></textarea>
+<div class="row" style="margin-top:8px"><button class="btn ghost" onclick="cs.value=cs.value.toUpperCase()">UPPER</button>
+<button class="btn ghost" onclick="cs.value=cs.value.toLowerCase()">lower</button>
+<button class="btn ghost" onclick="cs.value=cs.value.replace(/\\w\\S*/g,w=>w[0].toUpperCase()+w.slice(1).toLowerCase())">Title</button></div></div>
+<div class="tool"><h3>URL ENCODE</h3><textarea id="ue"></textarea>
+<div class="row" style="margin-top:8px"><button class="btn" onclick="ue.value=encodeURIComponent(ue.value)">ENCODE</button>
+<button class="btn ghost" onclick="ue.value=decodeURIComponent(ue.value)">DECODE</button></div></div>
+<div class="tool"><h3>JSON FORMAT</h3><textarea id="js"></textarea>
+<div class="row" style="margin-top:8px"><button class="btn" onclick="try{js.value=JSON.stringify(JSON.parse(js.value),null,2)}catch(e){hout.textContent='invalid'}">FORMAT</button></div></div>
+<script>
+async function hashIt(){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(hs.value));
+  document.getElementById('hout').textContent = [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+</script></body></html>

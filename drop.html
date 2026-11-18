@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FAXX Drop</title><link rel="stylesheet" href="style.css" /></head>
+<body>
+<div class="top"><a class="brand" href="index.html">← FAXX</a><span class="spacer"></span></div>
+<div class="wrap"><h1>Drop</h1>
+<p class="lead">Uploads go to catbox.moe — permanent, no account, 200MB cap. Files never touch this site.</p>
+<input type="file" id="f" style="padding:11px;background:#fff;border:2px dashed var(--pink);border-radius:14px;width:100%">
+<div class="row" style="margin-top:14px"><button class="btn" id="up">UPLOAD</button>
+<span id="st" class="meta"></span></div>
+<div id="out" style="margin-top:16px"></div>
+<script>
+document.getElementById('up').onclick = async () => {
+  const f = document.getElementById('f').files[0];
+  const st = document.getElementById('st');
+  if(!f) return st.textContent = 'pick a file first';
+  st.textContent = 'uploading…';
+  const fd = new FormData();
+  fd.append('reqtype', 'fileupload');
+  fd.append('fileToUpload', f);
+  try{
+    const r = await fetch('https://catbox.moe/user/api.php', { method: 'POST', body: fd });
+    const url = (await r.text()).trim();
+    st.textContent = 'done';
+    document.getElementById('out').innerHTML =
+      `<div class="card"><a href="${url}" target="_blank" rel="noopener">${url}</a>
+       <div class="row" style="margin-top:8px"><button class="btn ghost" onclick="navigator.clipboard.writeText('${url}')">COPY</button></div></div>`;
+  } catch(e){ st.textContent = 'failed — file may be over 200MB'; }
+};
+</script></body></html>

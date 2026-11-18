@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FAXX Popup</title><link rel="stylesheet" href="style.css" />
+<style>#toasts{position:fixed;right:16px;bottom:16px;z-index:80;display:flex;flex-direction:column;gap:8px}
+.toast{background:#fff;border:2px solid var(--pink);border-radius:12px;padding:10px 14px;font-size:12px;box-shadow:0 8px 24px rgba(255,46,136,.2);animation:in .2s}
+@keyframes in{from{transform:translateY(10px);opacity:0}}
+#modal{position:fixed;inset:0;background:rgba(42,15,61,.8);display:none;place-items:center;z-index:70;padding:20px}
+#modal.on{display:grid}
+.sheet{background:#fff;border-radius:18px;padding:22px;max-width:380px;text-align:center}</style></head>
+<body>
+<div class="top"><a class="brand" href="index.html">← FAXX</a><span class="spacer"></span></div>
+<div class="wrap"><h1>Popup</h1>
+<p class="lead">Two components, no dependencies. Copy the block below into any page of the suite.</p>
+<div class="row"><button class="btn" onclick="toast('saved to your library')">TOAST</button>
+<button class="btn cy" onclick="modal(true)">MODAL</button></div>
+<pre class="card" style="margin-top:18px;font-size:11px;overflow:auto"><code>toast('text')        // corner message
+modal(true)          // open sheet
+modal(false)         // close sheet</code></pre>
+</div>
+<div id="toasts"></div>
+<div id="modal" onclick="if(event.target.id==='modal')modal(false)">
+<div class="sheet"><h2>Are you sure?</h2><p class="lead" style="margin:0 auto 16px">This is what a confirmation looks like.</p>
+<div class="row" style="justify-content:center"><button class="btn ghost" onclick="modal(false)">CANCEL</button>
+<button class="btn" onclick="modal(false);toast('confirmed')">CONFIRM</button></div></div></div>
+<script>
+function toast(t){ const d = document.createElement('div'); d.className = 'toast'; d.textContent = t;
+  document.getElementById('toasts').appendChild(d); setTimeout(()=>d.remove(), 2600); }
+function modal(on){ document.getElementById('modal').classList.toggle('on', on); }
+</script></body></html>p

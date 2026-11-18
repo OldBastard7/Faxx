@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FAXX Responsinator</title><link rel="stylesheet" href="style.css" />
+<style>#out{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start}
+.dev{border:3px solid var(--cyan);border-radius:14px;overflow:hidden;background:#fff}
+.dev header{background:#f6ecff;padding:5px 9px;font-size:9.5px;letter-spacing:.16em;color:#9b4dff}
+.dev iframe{border:0;display:block;background:#fff;height:520px}</style></head>
+<body>
+<div class="top"><a class="brand" href="index.html">← FAXX</a><span class="spacer"></span></div>
+<div class="wrap"><h1>Responsinator</h1>
+<div class="row" style="margin-bottom:14px">
+<input id="u" placeholder="https://…" style="flex:1;min-width:220px" value="https://asbros.github.io/">
+<button class="btn" id="go">LOAD</button></div>
+<div id="out"></div></div>
+<script>
+const SIZES = [['PHONE', 375], ['TABLET', 768], ['LAPTOP', 1024]];
+document.getElementById('go').onclick = () => {
+  const out = document.getElementById('out'); out.innerHTML = '';
+  let url = document.getElementById('u').value.trim();
+  if(!/^https?:/.test(url)) url = 'https://' + url;
+  SIZES.forEach(([n, w]) => {
+    const d = document.createElement('div'); d.className = 'dev';
+    d.innerHTML = `<header>${n} · ${w}px</header><iframe src="${url}" style="width:${w}px" loading="lazy"></iframe>`;
+    out.appendChild(d);
+  });
+};
+</script></body></html>

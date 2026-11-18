@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FAXX Relay</title><link rel="stylesheet" href="style.css" />
+<style>#msgs{height:52vh;overflow:auto;border:2px solid #f5e2ff;border-radius:14px;padding:12px;background:#fff;margin-bottom:10px}
+.m{padding:7px 11px;border-radius:12px;background:#f6ecff;margin-bottom:7px;font-size:12px;max-width:78%}
+.m b{display:block;font-size:9.5px;letter-spacing:.14em;color:#9b4dff;margin-bottom:2px}
+.mine{background:linear-gradient(90deg,#ffe4f1,#ffd9ec);margin-left:auto}</style></head>
+<body>
+<div class="top"><a class="brand" href="index.html">← FAXX</a><span class="spacer"></span></div>
+<div class="wrap"><h1>Relay</h1>
+<div class="row" style="margin-bottom:12px"><input id="who" placeholder="your name" value="">
+<input id="room" placeholder="room" value="lobby" style="width:110px"></div>
+<div id="msgs"></div>
+<div class="row"><input id="txt" placeholder="message…" style="flex:1"><button class="btn" id="send">SEND</button></div>
+<p class="meta" style="margin-top:12px">Firebase free tier. Replace the config below with your own project.</p>
+</div>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, push, onChildAdded, query, limitToLast } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+const CFG = { apiKey: '', authDomain: '', databaseURL: '', projectId: '', appId: '' }; // ← paste yours
+const app = initializeApp(CFG), db = getDatabase(app);
+const msgs = document.getElementById('msgs'), txt = document.getElementById('txt'),
+      who = document.getElementById('who'), room = document.getElementById('room');
+let q;
+
+function connect(){
+  msgs.innerHTML = '';
+  q = query(ref(db, 'rooms/' + room.value.trim().toLowerCase()), limitToLast(80));
+  onChildAdded(q, snap => {
+    const v = snap.val();
+    const d = document.createElement('div');
+    d.className = 'm' + (v.name === who.value ? ' mine' : '');
+    d.innerHTML = `<b>${v.name || 'anon'}</b>${v.text}`;
+    msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight;
+  });
+}
+room.onchange = connect; connect();
+
+function send(){
+  const t = txt.value.trim(); if(!t) return;
+  if(!who.value.trim()) who.value = 'anon' + Math.floor(Math.random()*900+100);
+  push(ref(db, 'rooms/' + room.value.trim().toLowerCase()), { name: who.value.trim(), text: t });
+  txt.value = '';
+}
+document.getElementById('send').onclick = send;
+txt.onkeydown = e => { if(e.key === 'Enter') send(); };
+</script></body></html>

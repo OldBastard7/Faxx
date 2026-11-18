@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FAXX Cineplex</title><link rel="stylesheet" href="style.css" />
+<style>.posters{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}</style></head>
+<body>
+<div class="top"><a class="brand" href="index.html">← FAXX</a><span class="spacer"></span>
+<div class="nav"><a href="cineplex.html">MOVIES</a><a href="cineplex.html?tv=1">SERIES</a></div></div>
+<div class="wrap">
+  <h1>Cineplex</h1>
+  <div class="row" style="margin-bottom:18px">
+    <input id="q" placeholder="Search a title…" style="flex:1;min-width:200px" />
+    <button class="btn" id="go">SEARCH</button>
+    <button class="btn ghost" id="clear">CLEAR</button>
+  </div>
+  <h2 id="label">Trending this week</h2>
+  <div class="grid posters" id="grid"></div>
+</div>
+
+<div class="overlay" id="ov"><div class="player">
+  <iframe id="frame" allow="autoplay;fullscreen" allowfullscreen></iframe>
+  <div class="pbar"><span id="ptitle">—</span><span class="spacer"></span>
+    <select id="src"></select><button class="close" id="x">CLOSE</button></div>
+</div></div>
+
+<script src="providers.js"></script>
+<script>
+const KEY = '3e69f54ee4d87a083269de34c102ed09';
+const IMG = 'https://image.tmdb.org/t/p/w342';
+const grid = document.getElementById('grid'), ov = document.getElementById('ov'),
+      frame = document.getElementById('frame'), srcSel = document.getElementById('src'),
+      label = document.getElementById('label'), ptitle = document.getElementById('ptitle');
+const isTV = new URLSearchParams(location.search).has('tv');
+
+PROVIDERS.forEach((p, i) => srcSel.add(new Option(p.name, i)));
+
+function draw(list){
+  grid.innerHTML = '';
+  list.forEach(m => {
+    const w = document.createElement('div'); w.className = 'poster-wrap';
+    w.innerHTML = `<img class="poster" loading="lazy" src="${m.poster_path ? IMG + m.poster_path : ''}" alt="">
+      <div class="meta">${m.title || m.name || ''}<br>${(m.release_date || m.first_air_date || '').slice(0,4)}</div>`;
+    w.onclick = () => open(m);
+    grid.appendChild(w);
+  });
+  if(!list.length) grid.innerHTML = '<p class="meta">Nothing found.</p>';
+}
+
+async function load(url, lab){
+  label.textContent = lab;
+  const r = await fetch(url);
+  const j = await r.json();
+  draw(j.results || []);
+}
+
+function open(m){
+  const id = m.id, kind = isTV ? 'tv' : 'movie';
+  ptitle.textContent = m.title || m.name || '';
+  const build = () => frame.src = PROVIDERS[srcSel.value][kind] + id;
+  srcSel.onchange = build; build();
+  ov.classList.add('on');
+}
+document.getElementById('x').onclick = () => { ov.classList.remove('on'); frame.src = ''; };
+
+document.getElementById('go').onclick = () => {
+  const q = document.getElementById('q').value.trim();
+  if(q) load(`https://api.themoviedb.org/3/search/${isTV?'tv':'movie'}?api_key=${KEY}&query=${encodeURIComponent(q)}`, `Results for "${q}"`);
+};
+document.getElementById('q').onkeydown = e => { if(e.key === 'Enter') document.getElementById('go').click(); };
+document.getElementById('clear').onclick = () => {
+  document.getElementById('q').value = '';
+  load(`https://api.themoviedb.org/3/trending/${isTV?'tv':'movie'}/week?api_key=${KEY}`, 'Trending this week');
+};
+load(`https://api.themoviedb.org/3/trending/${isTV?'tv':'movie'}/week?api_key=${KEY}`, 'Trending this week');
+</script></body></html>
