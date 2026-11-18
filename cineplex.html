@@ -1,74 +1,525 @@
+
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>FAXX Cineplex</title><link rel="stylesheet" href="style.css" />
-<style>.posters{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}</style></head>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAXX Cineplex</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #090909;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+}
+
+.top {
+    height: 65px;
+    display: flex;
+    align-items: center;
+    padding: 0 5%;
+    background: #111;
+    border-bottom: 1px solid #252525;
+    gap: 25px;
+}
+
+.brand {
+    color: #fff;
+    font-size: 22px;
+    font-weight: 900;
+    text-decoration: none;
+}
+
+.spacer {
+    flex: 1;
+}
+
+.nav {
+    display: flex;
+    gap: 22px;
+}
+
+.nav a {
+    color: #aaa;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.nav a:hover {
+    color: #fff;
+}
+
+.wrap {
+    max-width: 1400px;
+    margin: auto;
+    padding: 35px 5%;
+}
+
+h1 {
+    font-size: 34px;
+    margin-bottom: 25px;
+}
+
+h2 {
+    font-size: 21px;
+    margin: 28px 0 18px;
+}
+
+.row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+input {
+    background: #181818;
+    border: 1px solid #333;
+    color: white;
+    padding: 14px;
+    border-radius: 7px;
+    outline: none;
+    font-size: 14px;
+}
+
+input:focus {
+    border-color: #e50914;
+}
+
+.btn {
+    background: #e50914;
+    color: white;
+    border: none;
+    padding: 13px 20px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn:hover {
+    background: #b80710;
+}
+
+.ghost {
+    background: #292929;
+}
+
+.ghost:hover {
+    background: #444;
+}
+
+.posters {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 22px 15px;
+}
+
+.poster-wrap {
+    cursor: pointer;
+    min-width: 0;
+    transition: transform .2s;
+}
+
+.poster-wrap:hover {
+    transform: scale(1.04);
+}
+
+.poster {
+    width: 100%;
+    aspect-ratio: 2/3;
+    object-fit: cover;
+    background: #202020;
+    border-radius: 9px;
+    display: block;
+}
+
+.meta {
+    color: #ddd;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-top: 9px;
+}
+
+.status {
+    color: #999;
+    padding: 20px 0;
+}
+
+/* PLAYER */
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0,0,0,.94);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.overlay.on {
+    display: flex;
+}
+
+.player {
+    width: 100%;
+    max-width: 1050px;
+    background: #151515;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.player iframe {
+    width: 100%;
+    aspect-ratio: 16/9;
+    border: none;
+    display: block;
+    background: black;
+}
+
+.pbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px;
+    flex-wrap: wrap;
+}
+
+#ptitle {
+    font-weight: bold;
+}
+
+select {
+    background: #252525;
+    color: white;
+    padding: 9px;
+    border: 1px solid #444;
+    border-radius: 5px;
+}
+
+.close {
+    background: #e50914;
+    border: none;
+    padding: 9px 16px;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+@media(max-width:600px) {
+    .posters {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px 10px;
+    }
+
+    .wrap {
+        padding: 25px 4%;
+    }
+
+    h1 {
+        font-size: 27px;
+    }
+
+    .top {
+        padding: 0 4%;
+    }
+}
+</style>
+</head>
+
 <body>
-<div class="top"><a class="brand" href="index.html">← FAXX</a><span class="spacer"></span>
-<div class="nav"><a href="cineplex.html">MOVIES</a><a href="cineplex.html?tv=1">SERIES</a></div></div>
-<div class="wrap">
-  <h1>Cineplex</h1>
-  <div class="row" style="margin-bottom:18px">
-    <input id="q" placeholder="Search a title…" style="flex:1;min-width:200px" />
-    <button class="btn" id="go">SEARCH</button>
-    <button class="btn ghost" id="clear">CLEAR</button>
-  </div>
-  <h2 id="label">Trending this week</h2>
-  <div class="grid posters" id="grid"></div>
+
+<div class="top">
+    <a class="brand" href="index.html">← FAXX</a>
+
+    <span class="spacer"></span>
+
+    <div class="nav">
+        <a href="cineplex.html">MOVIES</a>
+        <a href="cineplex.html?tv=1">SERIES</a>
+    </div>
 </div>
 
-<div class="overlay" id="ov"><div class="player">
-  <iframe id="frame" allow="autoplay;fullscreen" allowfullscreen></iframe>
-  <div class="pbar"><span id="ptitle">—</span><span class="spacer"></span>
-    <select id="src"></select><button class="close" id="x">CLOSE</button></div>
-</div></div>
+<div class="wrap">
+
+    <h1>Cineplex</h1>
+
+    <div class="row">
+        <input
+            id="q"
+            placeholder="Search a title..."
+            style="flex:1;min-width:180px"
+        >
+
+        <button class="btn" id="go">SEARCH</button>
+        <button class="btn ghost" id="clear">CLEAR</button>
+    </div>
+
+    <h2 id="label">Trending this week</h2>
+
+    <div class="grid posters" id="grid">
+        <p class="status">Loading titles...</p>
+    </div>
+
+</div>
+
+<!-- PLAYER OVERLAY -->
+
+<div class="overlay" id="ov">
+
+    <div class="player">
+
+        <iframe
+            id="frame"
+            allow="autoplay; fullscreen"
+            allowfullscreen>
+        </iframe>
+
+        <div class="pbar">
+
+            <span id="ptitle">—</span>
+
+            <span class="spacer"></span>
+
+            <select id="src"></select>
+
+            <button class="close" id="x">CLOSE</button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- PROVIDERS -->
 
 <script src="providers.js"></script>
+
 <script>
+
 const KEY = '3e69f54ee4d87a083269de34c102ed09';
+
 const IMG = 'https://image.tmdb.org/t/p/w342';
-const grid = document.getElementById('grid'), ov = document.getElementById('ov'),
-      frame = document.getElementById('frame'), srcSel = document.getElementById('src'),
-      label = document.getElementById('label'), ptitle = document.getElementById('ptitle');
+
+const grid = document.getElementById('grid');
+const ov = document.getElementById('ov');
+const frame = document.getElementById('frame');a
+const srcSel = document.getElementById('src');
+const label = document.getElementById('label');
+const ptitle = document.getElementById('ptitle');
+
 const isTV = new URLSearchParams(location.search).has('tv');
 
-PROVIDERS.forEach((p, i) => srcSel.add(new Option(p.name, i)));
 
-function draw(list){
-  grid.innerHTML = '';
-  list.forEach(m => {
-    const w = document.createElement('div'); w.className = 'poster-wrap';
-    w.innerHTML = `<img class="poster" loading="lazy" src="${m.poster_path ? IMG + m.poster_path : ''}" alt="">
-      <div class="meta">${m.title || m.name || ''}<br>${(m.release_date || m.first_air_date || '').slice(0,4)}</div>`;
-    w.onclick = () => open(m);
-    grid.appendChild(w);
-  });
-  if(!list.length) grid.innerHTML = '<p class="meta">Nothing found.</p>';
+// CHECK PROVIDERS
+
+if (typeof PROVIDERS === 'undefined') {
+    grid.innerHTML =
+        '<p class="status">Error: providers.js could not load.</p>';
+    throw new Error('PROVIDERS is not defined');
 }
 
-async function load(url, lab){
-  label.textContent = lab;
-  const r = await fetch(url);
-  const j = await r.json();
-  draw(j.results || []);
+
+// POPULATE PROVIDER SELECTOR
+
+PROVIDERS.forEach((p, i) => {
+    srcSel.add(new Option(p.name, i));
+});
+
+
+// DRAW MOVIES
+
+function draw(list) {
+
+    grid.innerHTML = '';
+
+    list.forEach(m => {
+
+        const w = document.createElement('div');
+        w.className = 'poster-wrap';
+
+        const img = document.createElement('img');
+        img.className = 'poster';
+        img.loading = 'lazy';
+        img.alt = m.title || m.name || 'Poster';
+
+        if (m.poster_path) {
+            img.src = IMG + m.poster_path;
+        }
+
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+
+        const title = m.title || m.name || 'Untitled';
+
+        const date = (
+            m.release_date ||
+            m.first_air_date ||
+            ''
+        );
+
+        meta.textContent =
+            `${title} (${date.slice(0,4) || 'N/A'})`;
+
+        w.appendChild(img);
+        w.appendChild(meta);
+
+        w.onclick = () => openPlayer(m);
+
+        grid.appendChild(w);
+
+    });
+
+    if (!list.length) {
+        grid.innerHTML =
+            '<p class="status">Nothing found.</p>';
+    }
 }
 
-function open(m){
-  const id = m.id, kind = isTV ? 'tv' : 'movie';
-  ptitle.textContent = m.title || m.name || '';
-  const build = () => frame.src = PROVIDERS[srcSel.value][kind] + id;
-  srcSel.onchange = build; build();
-  ov.classList.add('on');
+
+// API REQUEST
+
+async function load(url, heading) {
+
+    label.textContent = heading;
+
+    grid.innerHTML =
+        '<p class="status">Loading titles...</p>';
+
+    try {
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error('HTTP ' + response.status);
+        }
+
+        const data = await response.json();
+
+        draw(data.results || []);
+
+    } catch (error) {
+
+        console.error('TMDB ERROR:', error);
+
+        grid.innerHTML =
+            '<p class="status">Unable to load titles. Check your API key and internet connection.</p>';
+    }
 }
-document.getElementById('x').onclick = () => { ov.classList.remove('on'); frame.src = ''; };
+
+
+// OPEN PLAYER
+
+function openPlayer(m) {
+
+    const id = m.id;
+    const kind = isTV ? 'tv' : 'movie';
+
+    ptitle.textContent = m.title || m.name || '';
+
+    function build() {
+
+        const provider = PROVIDERS[
+            Number(srcSel.value)
+        ];
+
+        if (!provider || !provider[kind]) {
+            console.error('Invalid provider configuration');
+            return;
+        }
+
+        frame.src = provider[kind] + id;
+    }
+
+    srcSel.onchange = build;
+
+    build();
+
+    ov.classList.add('on');
+}
+
+
+// CLOSE PLAYER
+
+document.getElementById('x').onclick = () => {
+
+    ov.classList.remove('on');
+
+    frame.src = '';
+
+};
+
+
+// SEARCH
 
 document.getElementById('go').onclick = () => {
-  const q = document.getElementById('q').value.trim();
-  if(q) load(`https://api.themoviedb.org/3/search/${isTV?'tv':'movie'}?api_key=${KEY}&query=${encodeURIComponent(q)}`, `Results for "${q}"`);
+
+    const q = document.getElementById('q').value.trim();
+
+    if (!q) return;
+
+    const type = isTV ? 'tv' : 'movie';
+
+    const url =
+        `https://api.themoviedb.org/3/search/${type}` +
+        `?api_key=${KEY}&query=${encodeURIComponent(q)}`;
+
+    load(url, `Results for "${q}"`);
+
 };
-document.getElementById('q').onkeydown = e => { if(e.key === 'Enter') document.getElementById('go').click(); };
+
+
+// ENTER TO SEARCH
+
+document.getElementById('q').onkeydown = e => {
+
+    if (e.key === 'Enter') {
+        document.getElementById('go').click();
+    }
+
+};
+
+
+// TRENDING
+
+function loadTrending() {
+
+    const type = isTV ? 'tv' : 'movie';
+
+    const url =
+        `https://api.themoviedb.org/3/trending/${type}/week` +
+        `?api_key=${KEY}`;
+
+    load(url, 'Trending this week');
+
+}
+
+
+// CLEAR SEARCH
+
 document.getElementById('clear').onclick = () => {
-  document.getElementById('q').value = '';
-  load(`https://api.themoviedb.org/3/trending/${isTV?'tv':'movie'}/week?api_key=${KEY}`, 'Trending this week');
+
+    document.getElementById('q').value = '';
+
+    loadTrending();
+
 };
-load(`https://api.themoviedb.org/3/trending/${isTV?'tv':'movie'}/week?api_key=${KEY}`, 'Trending this week');
-</script></body></html>
+
+
+// INITIAL LOAD
+
+loadTrending();
+
+</script>
+
+</body>
+</html>
